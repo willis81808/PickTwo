@@ -34,7 +34,7 @@ namespace PickTwoPlugin
 
         void Awake()
         {
-            cardsToPick = Config.Bind("PickN", "CardsToPick", 3);
+            cardsToPick = Config.Bind("PickTwo", "CardsToPick", 3);
             
             var harmony = new Harmony(ModId);
             harmony.PatchAll();
