@@ -9,6 +9,7 @@ using BepInEx;
 using HarmonyLib;
 using UnboundLib;
 using System.Collections;
+using BepInEx.Configuration;
 using UnboundLib.GameModes;
 using UnboundLib.Networking;
 
@@ -23,6 +24,8 @@ namespace PickTwoPlugin
         private const string ModName = "Pick Two Cards";
         public static bool ModActive = true;
 
+        public static ConfigEntry<int> cardsToPick;
+        
         struct NetworkEventType
         {
             public const string
@@ -31,6 +34,8 @@ namespace PickTwoPlugin
 
         void Awake()
         {
+            cardsToPick = Config.Bind("PickN", "CardsToPick", 3);
+            
             var harmony = new Harmony(ModId);
             harmony.PatchAll();
 
@@ -51,10 +56,13 @@ namespace PickTwoPlugin
         {
             if (ModActive)
             {
-                yield return new WaitForSecondsRealtime(0.5f);
-                
-                CardChoiceVisuals.instance.Show(CardChoice_Data.i, true);
-                yield return CardChoice.instance.DoPick(1, CardChoice_Data.LastPickerID, CardChoice_Data.LastPickerType);
+                for (int i = 0; i < cardsToPick.Value - 1; i++)
+                {
+                    yield return new WaitForSecondsRealtime(0.5f);
+
+                    CardChoiceVisuals.instance.Show(CardChoice_Data.i, true);
+                    yield return CardChoice.instance.DoPick(1, CardChoice_Data.LastPickerID, CardChoice_Data.LastPickerType);
+                }
             }
 
             yield return null;
